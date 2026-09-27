@@ -4,6 +4,8 @@ public final class TerminalUI {
     private static final int BODY_WIDTH = 68;
     private static final int SCREEN_WIDTH = 60;
     private static final int SCREEN_MARGIN = 3;
+    private static final int CONTENT_PAGE_WIDTH = 56;
+    private static final int CONTENT_PAGE_HEIGHT = 16;
     private static final int MINIMUM_MENU_CHOICE = 1;
     private static final int MAXIMUM_MENU_CHOICE = 5;
 
@@ -45,6 +47,79 @@ public final class TerminalUI {
         printSpeaker();
         printBodyLine("", 0);
         printBodyBottom();
+    }
+
+    public void renderGameBoyPage(String title, String pageIndicator,
+            String[] contentLines, String navigationHint) {
+        if (title == null || pageIndicator == null
+                || contentLines == null || navigationHint == null) {
+            throw new IllegalArgumentException(
+                    "Page title, indicator, content, and navigation hint are required.");
+        }
+        if (title.length() > CONTENT_PAGE_WIDTH
+                || pageIndicator.length() > CONTENT_PAGE_WIDTH
+                || navigationHint.length() > CONTENT_PAGE_WIDTH) {
+            throw new IllegalArgumentException("Page title and navigation hint must fit the screen.");
+        }
+        if (contentLines.length > CONTENT_PAGE_HEIGHT) {
+            throw new IllegalArgumentException("A content page supports at most "
+                    + CONTENT_PAGE_HEIGHT + " content lines.");
+        }
+
+        System.out.println();
+        printBodyTop();
+        printPowerIndicator();
+        printScreenBorder();
+        printScreenLine("", 0);
+        printCenteredScreenLine(theme.boldCream(title), title.length());
+        printCenteredScreenLine(theme.gray(pageIndicator), pageIndicator.length());
+        printScreenDivider();
+
+        int unusedLines = CONTENT_PAGE_HEIGHT - contentLines.length;
+        int topPadding = unusedLines / 2;
+        int bottomPadding = unusedLines - topPadding;
+        for (int index = 0; index < topPadding; index++) {
+            printContentPageLine("", 0);
+        }
+        for (String line : contentLines) {
+            if (line == null || line.length() > CONTENT_PAGE_WIDTH) {
+                throw new IllegalArgumentException(
+                        "Every page content line must be non-null and at most "
+                        + CONTENT_PAGE_WIDTH + " characters.");
+            }
+            printContentPageLine(theme.white(line), line.length());
+        }
+        for (int index = 0; index < bottomPadding; index++) {
+            printContentPageLine("", 0);
+        }
+
+        printScreenLine("", 0);
+        printCenteredScreenLine(theme.cream(navigationHint), navigationHint.length());
+        printScreenBorder();
+        printPhysicalControls();
+        printSelectAndStart();
+        printCompactSpeaker();
+        printBodyBottom();
+        System.out.print(theme.cream("  Command [Enter/A/B/M]: "));
+    }
+
+    public String readPageCommand(Scanner scanner) {
+        while (scanner.hasNextLine()) {
+            String command = scanner.nextLine().trim();
+            if (command.isEmpty()
+                    || command.equalsIgnoreCase("a")
+                    || command.equalsIgnoreCase("b")
+                    || command.equalsIgnoreCase("m")) {
+                System.out.println();
+                return command;
+            }
+
+            System.out.println(theme.coral("  Invalid command. Use Enter, A, B, or M."));
+            System.out.print(theme.cream("  Command [Enter/A/B/M]: "));
+        }
+
+        System.out.println();
+        return "m";
     }
 
     public int readMenuSelection(Scanner scanner) {
@@ -100,6 +175,15 @@ public final class TerminalUI {
         System.out.print(theme.reset());
     }
 
+    public void waitForEnter(Scanner scanner) {
+        System.out.println();
+        System.out.print(theme.cream("  Press ENTER to return to the main menu..."));
+        if (scanner.hasNextLine()) {
+            scanner.nextLine();
+        }
+        System.out.println();
+    }
+
     private void printScreenMenuItem(int number, String label) {
         String styledItem = theme.coral("[" + number + "]") + " " + theme.cream(label);
         int visibleLength = label.length() + 4;
@@ -148,6 +232,11 @@ public final class TerminalUI {
         printBodyLine(screenLine, BODY_WIDTH);
     }
 
+    private void printContentPageLine(String styledText, int visibleLength) {
+        String paddedText = "  " + styledText;
+        printScreenLine(paddedText, visibleLength + 2);
+    }
+
     private void printPhysicalControls() {
         String[] dPad = AsciiArt.dPad();
         printControlLine(dPad[0], "" + theme.coral("(A)"), 3);
@@ -170,6 +259,12 @@ public final class TerminalUI {
             String content = repeat(' ', 49) + theme.gray(line);
             printBodyLine(content, 49 + line.length());
         }
+    }
+
+    private void printCompactSpeaker() {
+        String line = AsciiArt.speaker()[0];
+        String content = repeat(' ', 49) + theme.gray(line);
+        printBodyLine(content, 49 + line.length());
     }
 
     private void printCenteredBodyLine(String styledText, int visibleLength) {
