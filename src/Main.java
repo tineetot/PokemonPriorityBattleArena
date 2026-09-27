@@ -7,13 +7,25 @@ public class Main {
 
         AnsiTheme theme = new AnsiTheme(colorsEnabled);
         TerminalUI terminalUI = new TerminalUI(theme);
-
-        terminalUI.showTitleScreen();
-        terminalUI.showMainMenu();
-
         Scanner scanner = new Scanner(System.in);
-        int selection = terminalUI.readMenuSelection(scanner);
-        terminalUI.showSelectionMessage(selection);
+        HeapDemo heapDemo = new HeapDemo(terminalUI);
+        boolean running = true;
+
+        while (running) {
+            terminalUI.showTitleScreen();
+            terminalUI.showMainMenu();
+
+            int selection = terminalUI.readMenuSelection(scanner);
+            if (selection == 3) {
+                heapDemo.run(scanner);
+            } else if (selection == 5) {
+                terminalUI.showSelectionMessage(selection);
+                running = false;
+            } else {
+                terminalUI.showSelectionMessage(selection);
+                terminalUI.waitForEnter(scanner);
+            }
+        }
     }
 
     private static boolean hasArgument(String[] args, String expectedArgument) {
