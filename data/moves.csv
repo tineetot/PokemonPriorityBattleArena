@@ -1,0 +1,25 @@
+id,name,type,power,accuracy,priority,max_pp
+thunder-shock,Thunder Shock,ELECTRIC,40,100,0,30
+quick-attack,Quick Attack,NORMAL,40,100,1,30
+discharge,Discharge,ELECTRIC,80,100,0,15
+slam,Slam,NORMAL,80,75,0,20
+scratch,Scratch,NORMAL,40,100,0,35
+ember,Ember,FIRE,40,100,0,25
+fire-fang,Fire Fang,FIRE,65,95,0,15
+slash,Slash,NORMAL,70,100,0,20
+tackle,Tackle,NORMAL,40,100,0,35
+water-gun,Water Gun,WATER,40,100,0,25
+aqua-jet,Aqua Jet,WATER,40,100,1,20
+bubble-beam,Bubble Beam,WATER,65,100,0,20
+vine-whip,Vine Whip,GRASS,45,100,0,25
+razor-leaf,Razor Leaf,GRASS,55,95,0,25
+take-down,Take Down,NORMAL,90,85,0,20
+fire-spin,Fire Spin,FIRE,35,85,0,15
+flame-wheel,Flame Wheel,FIRE,60,100,0,25
+aqua-tail,Aqua Tail,WATER,90,90,0,10
+fury-swipes,Fury Swipes,NORMAL,18,80,0,15
+absorb,Absorb,GRASS,20,100,0,25
+mega-drain,Mega Drain,GRASS,40,100,0,15
+giga-drain,Giga Drain,GRASS,75,100,0,10
+energy-ball,Energy Ball,GRASS,90,100,0,10
+spark,Spark,ELECTRIC,65,100,0,20

@@ -1,0 +1,9 @@
+id,name,type,hp,attack,defense,speed,move_1,move_2,move_3,move_4
+pikachu,Pikachu,ELECTRIC,35,55,40,90,thunder-shock,quick-attack,discharge,slam
+charmander,Charmander,FIRE,39,52,43,65,scratch,ember,fire-fang,slash
+squirtle,Squirtle,WATER,44,48,65,43,tackle,water-gun,aqua-jet,bubble-beam
+bulbasaur,Bulbasaur,GRASS,45,49,49,45,tackle,vine-whip,razor-leaf,take-down
+vulpix,Vulpix,FIRE,38,41,40,65,ember,quick-attack,fire-spin,flame-wheel
+psyduck,Psyduck,WATER,50,52,48,55,scratch,water-gun,aqua-tail,fury-swipes
+oddish,Oddish,GRASS,45,50,55,30,absorb,mega-drain,giga-drain,energy-ball
+magnemite,Magnemite,ELECTRIC,25,35,70,45,tackle,thunder-shock,spark,discharge
