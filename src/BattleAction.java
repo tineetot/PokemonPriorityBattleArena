@@ -1,3 +1,5 @@
+// Class representing a single action taken by a Pokemon in battle, including the acting Pokemon, the move used, the target Pokemon, and the sequence number of the action.
+
 public final class BattleAction {
     private final Pokemon actor;
     private final Move move;
@@ -50,6 +52,7 @@ public final class BattleAction {
         return comparePriorityTo(other) > 0;
     }
 
+    // Compares this BattleAction to another BattleAction based on move priority, actor speed, and sequence number.
     public int comparePriorityTo(BattleAction other) {
         if (other == null) {
             throw new IllegalArgumentException("Other battle action must not be null.");
@@ -67,7 +70,7 @@ public final class BattleAction {
             return speedComparison;
         }
 
-        // A lower sequence number was selected earlier, so it ranks higher.
+        // If both priority and speed are equal, compare by sequence number (lower sequence number goes first).
         return Long.compare(other.sequenceNumber, sequenceNumber);
     }
 
@@ -88,3 +91,7 @@ public final class BattleAction {
         return false;
     }
 }
+
+// A BattleAction represents one Pokémon using one selected move on a target. 
+// It stores the actor, move, target, and sequence number. The class also defines how actions are compared. 
+// Higher move priority comes first, followed by higher Pokémon Speed, and then lower sequence number as the final tie-breaker

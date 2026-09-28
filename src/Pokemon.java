@@ -1,3 +1,5 @@
+// Class representing the Pokémons in a Pokémon battle
+
 public final class Pokemon {
     private final String name;
     private final PokemonType type;
@@ -6,7 +8,7 @@ public final class Pokemon {
     private final int attack;
     private final int defense;
     private final int speed;
-    private final Move[] moves;
+    private final Move[] moves; 
 
     public Pokemon(String name, PokemonType type, int maxHp, int attack,
             int defense, int speed, Move[] moves) {
@@ -69,8 +71,7 @@ public final class Pokemon {
     }
 
     public Move[] getMoves() {
-        // A shallow clone prevents callers from replacing elements in the internal array.
-        return moves.clone();
+        return moves.clone(); // Return a copy to prevent external modification
     }
 
     public Move getMove(int index) {
@@ -137,3 +138,8 @@ public final class Pokemon {
         }
     }
 }
+
+// The Pokemon class stores each Pokémon’s name, type, HP, Attack, Defense, Speed, and available moves. 
+// Its moves are stored in a fixed Move[] array containing between one and four moves. 
+// The class manages taking damage, healing, fainting, and restoring HP and PP. 
+// Pokémon Speed is also used as the second comparison rule in our max-heap.

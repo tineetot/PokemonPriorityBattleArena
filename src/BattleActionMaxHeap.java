@@ -1,4 +1,4 @@
-public final class BattleActionMaxHeap {
+public final class BattleActionMaxHeap { // used for storing the battleactions in order of priority
     private static final int DEFAULT_CAPACITY = 4;
 
     // In this max heap, each parent ranks at least as high as its children.
@@ -10,6 +10,7 @@ public final class BattleActionMaxHeap {
         this(DEFAULT_CAPACITY);
     }
 
+    // initializes an empty heap with the specified initial capacity.
     public BattleActionMaxHeap(int initialCapacity) {
         if (initialCapacity < 1) {
             throw new IllegalArgumentException("Heap initial capacity must be at least 1.");
@@ -151,3 +152,9 @@ public final class BattleActionMaxHeap {
         }
     }
 }
+
+// Our heap uses a BattleAction array and an integer called size. 
+// The array’s length represents its capacity, while size represents how many actions are currently stored. 
+// A new action is placed at index size, then size is increased. 
+// Heapify-up compares the new action with its parent and swaps them while the child has higher priority. 
+// Because the action only travels through the height of the tree, insertion has a time complexity of O(log n).

@@ -5,6 +5,7 @@ public class Main {
         boolean colorsEnabled = !hasArgument(args, "--no-color")
                 && System.getenv("NO_COLOR") == null;
 
+        // Initialize the terminal UI and heap demo with the specified color settings.
         AnsiTheme theme = new AnsiTheme(colorsEnabled);
         TerminalUI terminalUI = new TerminalUI(theme);
         Scanner scanner = new Scanner(System.in);
