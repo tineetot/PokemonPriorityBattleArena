@@ -1,3 +1,5 @@
+
+
 id,name,type,hp,attack,defense,speed,move_1,move_2,move_3,move_4
 pikachu,Pikachu,ELECTRIC,35,55,40,90,thunder-shock,quick-attack,discharge,slam
 charmander,Charmander,FIRE,39,52,43,65,scratch,ember,fire-fang,slash

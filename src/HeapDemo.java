@@ -1,3 +1,5 @@
+// Visually demonstrates insertion, heapify-up, extraction, and heapify-down using sample battle actions.
+
 import java.util.Scanner;
 
 public final class HeapDemo {

@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
@@ -10,6 +11,7 @@ public class Main {
         TerminalUI terminalUI = new TerminalUI(theme);
         Scanner scanner = new Scanner(System.in);
         HeapDemo heapDemo = new HeapDemo(terminalUI);
+        PokemonDataLoader dataLoader = new PokemonDataLoader();
         boolean running = true;
 
         while (running) {
@@ -17,7 +19,9 @@ public class Main {
             terminalUI.showMainMenu();
 
             int selection = terminalUI.readMenuSelection(scanner);
-            if (selection == 3) {
+            if (selection == 1) {
+                startTeamSelection(dataLoader, terminalUI, scanner);
+            } else if (selection == 3) {
                 heapDemo.run(scanner);
             } else if (selection == 5) {
                 terminalUI.showSelectionMessage(selection);
@@ -26,6 +30,17 @@ public class Main {
                 terminalUI.showSelectionMessage(selection);
                 terminalUI.waitForEnter(scanner);
             }
+        }
+    }
+
+    private static void startTeamSelection(PokemonDataLoader dataLoader,
+            TerminalUI terminalUI, Scanner scanner) {
+        try {
+            Pokemon[] availablePokemon = dataLoader.loadDefaultDataset();
+            terminalUI.runTeamSelection(scanner, availablePokemon);
+        } catch (IOException | IllegalArgumentException exception) {
+            terminalUI.showDatasetLoadError(exception.getMessage());
+            terminalUI.waitForEnter(scanner);
         }
     }
 
