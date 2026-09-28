@@ -1,8 +1,11 @@
+// Reads and validates the two CSV files, connects move IDs to Pokémon, 
+// and returns a usable Pokemon[].
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-/** Loads the small, controlled CSV dataset into Pokemon and Move objects. */
+
 public final class PokemonDataLoader {
     private static final String MOVE_HEADER =
             "id,name,type,power,accuracy,priority,max_pp";
