@@ -1,4 +1,4 @@
-// Class representing the Pokémons in a Pokémon battle
+// Represents one Pokémon, including its HP, Attack, Defense, Speed, type, and available moves.
 
 public final class Pokemon {
     private final String name;

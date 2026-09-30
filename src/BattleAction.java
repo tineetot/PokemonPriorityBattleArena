@@ -1,4 +1,5 @@
-// Class representing a single action taken by a Pokemon in battle, including the acting Pokemon, the move used, the target Pokemon, and the sequence number of the action.
+// Represents a planned action containing the acting Pokémon, selected move, 
+// target, and sequence number.
 
 public final class BattleAction {
     private final Pokemon actor;

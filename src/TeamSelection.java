@@ -1,4 +1,6 @@
-/** Stores one player's three unique Pokemon choices. */
+// Stores and validates the player’s three unique Pokémon choices 
+// using a fixed Pokemon[3] array.
+
 public final class TeamSelection {
     public static final int TEAM_SIZE = 3;
 

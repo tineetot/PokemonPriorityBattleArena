@@ -1,3 +1,5 @@
+// The custom main data structure that ranks battle actions by move priority, Speed, and sequence number.
+
 public final class BattleActionMaxHeap { // used for storing the battleactions in order of priority
     private static final int DEFAULT_CAPACITY = 4;
 

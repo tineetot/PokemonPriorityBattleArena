@@ -1,4 +1,4 @@
-// Class representing the moves in a Pokémon battle
+// Represents a Pokémon move, including its type, power, accuracy, priority, maximum PP, and current PP.
 
 public final class Move {
     private final String name;

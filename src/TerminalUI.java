@@ -6,10 +6,8 @@ public final class TerminalUI {
     private static final int BODY_WIDTH = 68;
     private static final int SCREEN_WIDTH = 60;
     private static final int SCREEN_MARGIN = 3;
-    private static final int CONTENT_PAGE_WIDTH = 56;
-    private static final int CONTENT_PAGE_HEIGHT = 16;
     private static final int MINIMUM_MENU_CHOICE = 1;
-    private static final int MAXIMUM_MENU_CHOICE = 5;
+    private static final int MAXIMUM_MENU_CHOICE = 2;
 
     private final AnsiTheme theme;
 
@@ -37,10 +35,7 @@ public final class TerminalUI {
         printScreenDivider();
         printCenteredScreenLine(theme.boldWhite("MAIN MENU"), 9);
         printScreenMenuItem(1, "Start Battle");
-        printScreenMenuItem(2, "How to Play");
-        printScreenMenuItem(3, "Heap Demonstration");
-        printScreenMenuItem(4, "Credits");
-        printScreenMenuItem(5, "Exit");
+        printScreenMenuItem(2, "Exit");
         printScreenLine("", 0);
         printScreenBorder();
         printBodyLine("", 0);
@@ -95,82 +90,9 @@ public final class TerminalUI {
         System.out.println(theme.gray("  " + detail));
     }
 
-    public void renderGameBoyPage(String title, String pageIndicator,
-            String[] contentLines, String navigationHint) {
-        if (title == null || pageIndicator == null
-                || contentLines == null || navigationHint == null) {
-            throw new IllegalArgumentException(
-                    "Page title, indicator, content, and navigation hint are required.");
-        }
-        if (title.length() > CONTENT_PAGE_WIDTH
-                || pageIndicator.length() > CONTENT_PAGE_WIDTH
-                || navigationHint.length() > CONTENT_PAGE_WIDTH) {
-            throw new IllegalArgumentException("Page title and navigation hint must fit the screen.");
-        }
-        if (contentLines.length > CONTENT_PAGE_HEIGHT) {
-            throw new IllegalArgumentException("A content page supports at most "
-                    + CONTENT_PAGE_HEIGHT + " content lines.");
-        }
-
-        System.out.println();
-        printBodyTop();
-        printPowerIndicator();
-        printScreenBorder();
-        printScreenLine("", 0);
-        printCenteredScreenLine(theme.boldCream(title), title.length());
-        printCenteredScreenLine(theme.gray(pageIndicator), pageIndicator.length());
-        printScreenDivider();
-
-        int unusedLines = CONTENT_PAGE_HEIGHT - contentLines.length;
-        int topPadding = unusedLines / 2;
-        int bottomPadding = unusedLines - topPadding;
-        for (int index = 0; index < topPadding; index++) {
-            printContentPageLine("", 0);
-        }
-        for (String line : contentLines) {
-            if (line == null || line.length() > CONTENT_PAGE_WIDTH) {
-                throw new IllegalArgumentException(
-                        "Every page content line must be non-null and at most "
-                        + CONTENT_PAGE_WIDTH + " characters.");
-            }
-            printContentPageLine(theme.white(line), line.length());
-        }
-        for (int index = 0; index < bottomPadding; index++) {
-            printContentPageLine("", 0);
-        }
-
-        printScreenLine("", 0);
-        printCenteredScreenLine(theme.cream(navigationHint), navigationHint.length());
-        printScreenBorder();
-        printPhysicalControls();
-        printSelectAndStart();
-        printCompactSpeaker();
-        printBodyBottom();
-        System.out.print(theme.cream("  Command [Enter/A/B/M]: "));
-    }
-
-    public String readPageCommand(Scanner scanner) {
-        while (scanner.hasNextLine()) {
-            String command = scanner.nextLine().trim();
-            if (command.isEmpty()
-                    || command.equalsIgnoreCase("a")
-                    || command.equalsIgnoreCase("b")
-                    || command.equalsIgnoreCase("m")) {
-                System.out.println();
-                return command;
-            }
-
-            System.out.println(theme.coral("  Invalid command. Use Enter, A, B, or M."));
-            System.out.print(theme.cream("  Command [Enter/A/B/M]: "));
-        }
-
-        System.out.println();
-        return "m";
-    }
-
     public int readMenuSelection(Scanner scanner) {
         while (true) {
-            System.out.print(theme.cream("  Select an option [1-5]: "));
+            System.out.print(theme.cream("  Select an option [1-2]: "));
 
             if (!scanner.hasNextLine()) {
                 System.out.println();
@@ -188,7 +110,8 @@ public final class TerminalUI {
                 // The shared message below handles non-numeric input too.
             }
 
-            System.out.println(theme.coral("  Invalid choice. Please enter a number from 1 to 5."));
+            System.out.println(theme.coral(
+                    "  Invalid choice. Please enter a number from 1 to 2."));
         }
     }
 
@@ -303,32 +226,10 @@ public final class TerminalUI {
         return names.toString();
     }
 
-    public void showSelectionMessage(int selection) {
-        String message;
-
-        switch (selection) {
-            case 1:
-                message = "Battle setup will arrive in a future milestone.";
-                break;
-            case 2:
-                message = "How-to-play instructions will be added with the battle rules.";
-                break;
-            case 3:
-                message = "The custom max-heap demonstration is planned for a later milestone.";
-                break;
-            case 4:
-                message = "Created by the Pokemon Priority Battle Arena development team.";
-                break;
-            case 5:
-                message = "Thanks for visiting the arena. See you next time!";
-                break;
-            default:
-                message = "Unknown menu selection.";
-                break;
-        }
-
+    public void showFarewellMessage() {
         System.out.println();
-        System.out.println(theme.gray("  > ") + theme.white(message));
+        System.out.println(theme.gray("  > ")
+                + theme.white("Thanks for visiting the arena. See you next time!"));
         System.out.print(theme.reset());
     }
 
