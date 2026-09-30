@@ -16,23 +16,23 @@ public final class PokemonDataLoader {
         validatePath(pokemonCsvPath, "Pokemon CSV");
         validatePath(movesCsvPath, "Move CSV");
 
-        MoveDefinition[] moveDefinitions = loadMoveDefinitions(movesCsvPath);
-        return loadPokemon(pokemonCsvPath, moveDefinitions);
+        MoveTemplate[] moveTemplates = loadMoveTemplates(movesCsvPath);
+        return loadPokemon(pokemonCsvPath, moveTemplates);
     }
 
     public Pokemon[] loadDefaultDataset() throws IOException {
         return load("data/pokemon.csv", "data/moves.csv");
     }
 
-    private MoveDefinition[] loadMoveDefinitions(String filename) throws IOException {
+    private MoveTemplate[] loadMoveTemplates(String filename) throws IOException {
         int rowCount = countDataRows(filename, MOVE_HEADER, "move");
-        MoveDefinition[] definitions = new MoveDefinition[rowCount];
+        MoveTemplate[] templates = new MoveTemplate[rowCount];
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             reader.readLine();
             String line;
             int lineNumber = 1;
-            int definitionIndex = 0;
+            int templateIndex = 0;
 
             while ((line = reader.readLine()) != null) {
                 lineNumber++;
@@ -43,11 +43,11 @@ public final class PokemonDataLoader {
                 String[] columns = splitRow(line);
                 requireColumnCount(columns, 7, filename, lineNumber);
                 String id = columns[0];
-                rejectDuplicateMoveId(definitions, definitionIndex, id,
+                rejectDuplicateMoveId(templates, templateIndex, id,
                         filename, lineNumber);
 
                 try {
-                    definitions[definitionIndex] = new MoveDefinition(
+                    templates[templateIndex] = new MoveTemplate(
                             id,
                             columns[1],
                             parseType(columns[2], filename, lineNumber),
@@ -61,16 +61,16 @@ public final class PokemonDataLoader {
                     }
                     throw invalidRow(filename, lineNumber, exception.getMessage(), exception);
                 }
-                definitionIndex++;
+                templateIndex++;
             }
         } catch (IOException exception) {
             throw fileReadFailure(filename, exception);
         }
 
-        return definitions;
+        return templates;
     }
 
-    private Pokemon[] loadPokemon(String filename, MoveDefinition[] definitions)
+    private Pokemon[] loadPokemon(String filename, MoveTemplate[] templates)
             throws IOException {
         int rowCount = countDataRows(filename, POKEMON_HEADER, "Pokemon");
         Pokemon[] pokemon = new Pokemon[rowCount];
@@ -95,16 +95,16 @@ public final class PokemonDataLoader {
 
                 Move[] moves = new Move[4];
                 for (int moveIndex = 0; moveIndex < moves.length; moveIndex++) {
-                    MoveDefinition definition = findMoveDefinition(
-                            definitions, columns[7 + moveIndex]);
-                    if (definition == null) {
+                    MoveTemplate template = findMoveTemplate(
+                            templates, columns[7 + moveIndex]);
+                    if (template == null) {
                         throw invalidRow(filename, lineNumber,
                                 "Move ID '" + columns[7 + moveIndex]
                                         + "' does not exist in the move dataset.",
                                 null);
                     }
                     // A fresh object gives every Pokemon independent current PP.
-                    moves[moveIndex] = definition.createMove();
+                    moves[moveIndex] = template.createMove();
                 }
 
                 try {
@@ -191,19 +191,19 @@ public final class PokemonDataLoader {
         }
     }
 
-    private MoveDefinition findMoveDefinition(MoveDefinition[] definitions, String id) {
-        for (MoveDefinition definition : definitions) {
-            if (definition.getId().equals(id)) {
-                return definition;
+    private MoveTemplate findMoveTemplate(MoveTemplate[] templates, String id) {
+        for (MoveTemplate template : templates) {
+            if (template.id.equals(id)) {
+                return template;
             }
         }
         return null;
     }
 
-    private void rejectDuplicateMoveId(MoveDefinition[] definitions, int usedLength,
+    private void rejectDuplicateMoveId(MoveTemplate[] templates, int usedLength,
             String id, String filename, int lineNumber) {
         for (int index = 0; index < usedLength; index++) {
-            if (definitions[index].getId().equals(id)) {
+            if (templates[index].id.equals(id)) {
                 throw invalidRow(filename, lineNumber,
                         "Duplicate move ID '" + id + "'.", null);
             }
@@ -253,5 +253,52 @@ public final class PokemonDataLoader {
 
     private IOException fileReadFailure(String filename, IOException cause) {
         return new IOException("Could not read CSV file '" + filename + "'.", cause);
+    }
+
+    /** Stores one move row and creates independent Move objects from it. */
+    private static final class MoveTemplate {
+        private final String id;
+        private final String name;
+        private final PokemonType type;
+        private final int power;
+        private final int accuracy;
+        private final int priority;
+        private final int maxPp;
+
+        private MoveTemplate(String id, String name, PokemonType type, int power,
+                int accuracy, int priority, int maxPp) {
+            if (id == null || id.trim().isEmpty()) {
+                throw new IllegalArgumentException("Move ID must not be null or blank.");
+            }
+            if (name == null || name.trim().isEmpty()) {
+                throw new IllegalArgumentException("Move name must not be null or blank.");
+            }
+            if (type == null) {
+                throw new IllegalArgumentException("Move type must not be null.");
+            }
+            if (power < 0) {
+                throw new IllegalArgumentException("Move power must not be negative.");
+            }
+            if (accuracy < 1 || accuracy > 100) {
+                throw new IllegalArgumentException(
+                        "Move accuracy must be between 1 and 100.");
+            }
+            if (maxPp <= 0) {
+                throw new IllegalArgumentException(
+                        "Move maximum PP must be greater than zero.");
+            }
+
+            this.id = id;
+            this.name = name;
+            this.type = type;
+            this.power = power;
+            this.accuracy = accuracy;
+            this.priority = priority;
+            this.maxPp = maxPp;
+        }
+
+        private Move createMove() {
+            return new Move(name, type, power, accuracy, priority, maxPp);
+        }
     }
 }

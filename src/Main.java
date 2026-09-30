@@ -10,8 +10,7 @@ public class Main {
                 && System.getenv("NO_COLOR") == null;
 
         // Initialize the terminal UI with the specified color settings.
-        AnsiTheme theme = new AnsiTheme(colorsEnabled);
-        TerminalUI terminalUI = new TerminalUI(theme);
+        TerminalUI terminalUI = new TerminalUI(colorsEnabled);
         Scanner scanner = new Scanner(System.in);
         PokemonDataLoader dataLoader = new PokemonDataLoader();
         boolean running = true;
