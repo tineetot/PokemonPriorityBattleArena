@@ -1,5 +1,5 @@
 // Starts the program, manages the main-menu loop, loads the dataset,
-// and opens team selection.
+// and opens team selection and the battle.
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -21,7 +21,7 @@ public class Main {
 
             int selection = terminalUI.readMenuSelection(scanner);
             if (selection == 1) {
-                startTeamSelection(dataLoader, terminalUI, scanner);
+                startBattle(dataLoader, terminalUI, scanner);
             } else {
                 terminalUI.showFarewellMessage();
                 running = false;
@@ -29,11 +29,18 @@ public class Main {
         }
     }
 
-    private static void startTeamSelection(PokemonDataLoader dataLoader,
+    private static void startBattle(PokemonDataLoader dataLoader,
             TerminalUI terminalUI, Scanner scanner) {
         try {
             Pokemon[] availablePokemon = dataLoader.loadDefaultDataset();
-            terminalUI.runTeamSelection(scanner, availablePokemon);
+            Pokemon[] selectedTeam = terminalUI.runTeamSelection(
+                    scanner, availablePokemon);
+            if (selectedTeam == null) {
+                return;
+            }
+
+            BattleGame battleGame = new BattleGame(availablePokemon, selectedTeam);
+            terminalUI.runBattle(scanner, battleGame);
         } catch (IOException | IllegalArgumentException exception) {
             terminalUI.showDatasetLoadError(exception.getMessage());
             terminalUI.waitForEnter(scanner);
