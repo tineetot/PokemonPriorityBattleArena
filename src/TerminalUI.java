@@ -3,16 +3,63 @@
 import java.util.Scanner;
 
 public final class TerminalUI {
+    // Display dimensions.
     private static final int BODY_WIDTH = 68;
     private static final int SCREEN_WIDTH = 60;
     private static final int SCREEN_MARGIN = 3;
     private static final int MINIMUM_MENU_CHOICE = 1;
     private static final int MAXIMUM_MENU_CHOICE = 2;
 
-    private final AnsiTheme theme;
+    private static final String GAME_TITLE = "PRIORITY BATTLE ARENA";
 
-    public TerminalUI(AnsiTheme theme) {
-        this.theme = theme;
+    // Game Boy-inspired artwork.
+    private static final String[] POKEMON_LOGO = {
+        " ____   ___  _  __ _____ __  __  ___  _   _ ",
+        "|  _ \\ / _ \\| |/ /| ____|  \\/  |/ _ \\| \\ | |",
+        "| |_) | | | | ' / |  _| | |\\/| | | | |  \\| |",
+        "|  __/| |_| | . \\ | |___| |  | | |_| | |\\  |",
+        "|_|    \\___/|_|\\_\\|_____|_|  |_|\\___/|_| \\_|"
+    };
+
+    private static final String[] BATTLE_SCENE = {
+        "      .--.                                        .--.      ",
+        "   .-(____)-.                                  .-(____)-.   ",
+        "      /\\             *     .----.     *             /\\      ",
+        "     /  \\                 /      \\                 /  \\     ",
+        "    /____\\               |---()---|               /____\\    ",
+        "      ||                  \\      /                  ||      ",
+        "  ___/||\\___              '----'              ___/||\\___  ",
+        "^^^..^^^..^^^..^^^..^^^..^^^....^^^..^^^..^^^..^^^..^^^..^^^"
+    };
+
+    private static final String[] D_PAD = {
+        "   [^]   ",
+        "[<][+][>]",
+        "   [v]   "
+    };
+
+    private static final String[] SPEAKER = {
+        ". . . .",
+        " . . . ."
+    };
+
+    // ANSI color palette.
+    private static final String ESCAPE = "\u001B[";
+    private static final String CORAL_RED = foreground(242, 85, 99);
+    private static final String BERRY_RED = foreground(201, 60, 84);
+    private static final String CHERRY_WINE = foreground(187, 58, 77);
+    private static final String CREAM_PEACH = foreground(251, 210, 176);
+    private static final String DUSTY_ROSE = foreground(229, 165, 146);
+    private static final String WARM_ROSE = foreground(212, 135, 123);
+    private static final String SOFT_WHITE = foreground(255, 244, 236);
+    private static final String WARM_GRAY = foreground(207, 194, 188);
+    private static final String BOLD = ESCAPE + "1m";
+    private static final String RESET = ESCAPE + "0m";
+
+    private final boolean colorsEnabled;
+
+    public TerminalUI(boolean colorsEnabled) {
+        this.colorsEnabled = colorsEnabled;
     }
 
     public void showTitleScreen() {
@@ -21,19 +68,19 @@ public final class TerminalUI {
         printPowerIndicator();
         printScreenBorder();
         printScreenLine("", 0);
-        for (String line : AsciiArt.pokemonLogo()) {
-            printCenteredScreenLine(theme.coral(line), line.length());
+        for (String line : POKEMON_LOGO) {
+            printCenteredScreenLine(coral(line), line.length());
         }
-        printCenteredScreenLine(theme.boldCream(GameConfig.GAME_TITLE), GameConfig.GAME_TITLE.length());
+        printCenteredScreenLine(boldCream(GAME_TITLE), GAME_TITLE.length());
         printScreenLine("", 0);
-        for (String line : AsciiArt.battleScene()) {
-            printCenteredScreenLine(theme.gray(line), line.length());
+        for (String line : BATTLE_SCENE) {
+            printCenteredScreenLine(gray(line), line.length());
         }
     }
 
     public void showMainMenu() {
         printScreenDivider();
-        printCenteredScreenLine(theme.boldWhite("MAIN MENU"), 9);
+        printCenteredScreenLine(boldWhite("MAIN MENU"), 9);
         printScreenMenuItem(1, "Start Battle");
         printScreenMenuItem(2, "Exit");
         printScreenLine("", 0);
@@ -86,13 +133,13 @@ public final class TerminalUI {
             detail = "The dataset could not be loaded.";
         }
         System.out.println();
-        System.out.println(theme.coral("  Dataset loading error:"));
-        System.out.println(theme.gray("  " + detail));
+        System.out.println(coral("  Dataset loading error:"));
+        System.out.println(gray("  " + detail));
     }
 
     public int readMenuSelection(Scanner scanner) {
         while (true) {
-            System.out.print(theme.cream("  Select an option [1-2]: "));
+            System.out.print(cream("  Select an option [1-2]: "));
 
             if (!scanner.hasNextLine()) {
                 System.out.println();
@@ -110,7 +157,7 @@ public final class TerminalUI {
                 // The shared message below handles non-numeric input too.
             }
 
-            System.out.println(theme.coral(
+            System.out.println(coral(
                     "  Invalid choice. Please enter a number from 1 to 2."));
         }
     }
@@ -122,11 +169,11 @@ public final class TerminalUI {
         printPowerIndicator();
         printScreenBorder();
         printScreenLine("", 0);
-        printCenteredScreenLine(theme.boldCream("CHOOSE YOUR TEAM"), 16);
-        printCenteredScreenLine(theme.gray("Select 3 unique Pokemon"), 23);
+        printCenteredScreenLine(boldCream("CHOOSE YOUR TEAM"), 16);
+        printCenteredScreenLine(gray("Select 3 unique Pokemon"), 23);
         printScreenDivider();
         String listHeader = "#   NAME         TYPE       HP    SPD";
-        printContentPageLine(theme.gray(listHeader), listHeader.length());
+        printContentPageLine(gray(listHeader), listHeader.length());
 
         for (int index = 0; index < availablePokemon.length; index++) {
             Pokemon pokemon = availablePokemon[index];
@@ -135,18 +182,18 @@ public final class TerminalUI {
                     + padRight(pokemon.getType().toString(), 8)
                     + "  " + padLeft(pokemon.getMaxHp(), 3)
                     + "   " + padLeft(pokemon.getSpeed(), 3);
-            printContentPageLine(theme.white(line), line.length());
+            printContentPageLine(white(line), line.length());
         }
 
         printScreenDivider();
         String styledStatus = showError
-                ? theme.coral(statusMessage) : theme.cream(statusMessage);
+                ? coral(statusMessage) : cream(statusMessage);
         printContentPageLine(styledStatus, statusMessage.length());
         String teamLine = "Team: " + selection.getSelectedCount()
                 + "/" + TeamSelection.TEAM_SIZE + "  "
                 + selectedNames(selection.getSelectedTeam(), selection.getSelectedCount());
-        printContentPageLine(theme.white(teamLine), teamLine.length());
-        printContentPageLine(theme.gray("[0] Back to Main Menu"), 21);
+        printContentPageLine(white(teamLine), teamLine.length());
+        printContentPageLine(gray("[0] Back to Main Menu"), 21);
         printScreenLine("", 0);
         printScreenBorder();
         printPhysicalControls();
@@ -157,7 +204,7 @@ public final class TerminalUI {
 
     private int readTeamSelectionNumber(Scanner scanner, int pokemonCount) {
         while (true) {
-            System.out.print(theme.cream(
+            System.out.print(cream(
                     "  Choose a Pokemon [0-" + pokemonCount + "]: "));
 
             if (!scanner.hasNextLine()) {
@@ -175,7 +222,7 @@ public final class TerminalUI {
                 // The shared message also handles non-numeric input.
             }
 
-            System.out.println(theme.coral(
+            System.out.println(coral(
                     "  Invalid choice. Enter 0 through " + pokemonCount + "."));
         }
     }
@@ -186,8 +233,8 @@ public final class TerminalUI {
         printPowerIndicator();
         printScreenBorder();
         printScreenLine("", 0);
-        printCenteredScreenLine(theme.boldCream("TEAM READY"), 10);
-        printCenteredScreenLine(theme.gray("Team: 3/3"), 9);
+        printCenteredScreenLine(boldCream("TEAM READY"), 10);
+        printCenteredScreenLine(gray("Team: 3/3"), 9);
         printScreenDivider();
         printScreenLine("", 0);
 
@@ -195,14 +242,14 @@ public final class TerminalUI {
             String line = "[" + (index + 1) + "] "
                     + selectedTeam[index].getName() + "  ["
                     + selectedTeam[index].getType() + "]";
-            printCenteredScreenLine(theme.white(line), line.length());
+            printCenteredScreenLine(white(line), line.length());
         }
 
         printScreenLine("", 0);
         printCenteredScreenLine(
-                theme.cream("Your three Pokemon are confirmed."), 33);
+                cream("Your three Pokemon are confirmed."), 33);
         printCenteredScreenLine(
-                theme.gray("Battle mechanics arrive in the next milestone."), 46);
+                gray("Battle mechanics arrive in the next milestone."), 46);
         printScreenLine("", 0);
         printScreenBorder();
         printPhysicalControls();
@@ -228,14 +275,14 @@ public final class TerminalUI {
 
     public void showFarewellMessage() {
         System.out.println();
-        System.out.println(theme.gray("  > ")
-                + theme.white("Thanks for visiting the arena. See you next time!"));
-        System.out.print(theme.reset());
+        System.out.println(gray("  > ")
+                + white("Thanks for visiting the arena. See you next time!"));
+        System.out.print(reset());
     }
 
     public void waitForEnter(Scanner scanner) {
         System.out.println();
-        System.out.print(theme.cream("  Press ENTER to return to the main menu..."));
+        System.out.print(cream("  Press ENTER to return to the main menu..."));
         if (scanner.hasNextLine()) {
             scanner.nextLine();
         }
@@ -243,40 +290,40 @@ public final class TerminalUI {
     }
 
     private void printScreenMenuItem(int number, String label) {
-        String styledItem = theme.coral("[" + number + "]") + " " + theme.cream(label);
+        String styledItem = coral("[" + number + "]") + " " + cream(label);
         int visibleLength = label.length() + 4;
         int leftPadding = (SCREEN_WIDTH - 24) / 2;
         printScreenLine(repeat(' ', leftPadding) + styledItem, leftPadding + visibleLength);
     }
 
     private void printPowerIndicator() {
-        String indicator = "  " + theme.coral("(*)") + theme.gray(" POWER");
+        String indicator = "  " + coral("(*)") + gray(" POWER");
         printBodyLine(indicator, 11);
     }
 
     private void printBodyTop() {
-        System.out.println(theme.cherry("+" + repeat('-', BODY_WIDTH) + "+"));
+        System.out.println(cherry("+" + repeat('-', BODY_WIDTH) + "+"));
     }
 
     private void printBodyBottom() {
-        System.out.println(theme.cherry("\\" + repeat('_', BODY_WIDTH) + "/"));
+        System.out.println(cherry("\\" + repeat('_', BODY_WIDTH) + "/"));
     }
 
     private void printScreenDivider() {
-        printScreenLine(theme.berry(repeat('-', SCREEN_WIDTH)), SCREEN_WIDTH);
+        printScreenLine(berry(repeat('-', SCREEN_WIDTH)), SCREEN_WIDTH);
     }
 
     private void printScreenBorder() {
         String margin = repeat(' ', SCREEN_MARGIN);
-        String screenBorder = margin + theme.berry("+" + repeat('-', SCREEN_WIDTH) + "+") + margin;
+        String screenBorder = margin + berry("+" + repeat('-', SCREEN_WIDTH) + "+") + margin;
         printBodyLine(screenBorder, BODY_WIDTH);
     }
 
     private void printScreenLine(String styledText, int visibleLength) {
         int rightPadding = Math.max(0, SCREEN_WIDTH - visibleLength);
         String margin = repeat(' ', SCREEN_MARGIN);
-        String screenLine = margin + theme.berry("|") + styledText
-                + repeat(' ', rightPadding) + theme.berry("|") + margin;
+        String screenLine = margin + berry("|") + styledText
+                + repeat(' ', rightPadding) + berry("|") + margin;
         printBodyLine(screenLine, BODY_WIDTH);
     }
 
@@ -284,9 +331,9 @@ public final class TerminalUI {
         int leftPadding = Math.max(0, (SCREEN_WIDTH - visibleLength) / 2);
         int rightPadding = Math.max(0, SCREEN_WIDTH - visibleLength - leftPadding);
         String margin = repeat(' ', SCREEN_MARGIN);
-        String screenLine = margin + theme.berry("|")
+        String screenLine = margin + berry("|")
                 + repeat(' ', leftPadding) + styledText + repeat(' ', rightPadding)
-                + theme.berry("|") + margin;
+                + berry("|") + margin;
         printBodyLine(screenLine, BODY_WIDTH);
     }
 
@@ -296,32 +343,31 @@ public final class TerminalUI {
     }
 
     private void printPhysicalControls() {
-        String[] dPad = AsciiArt.dPad();
-        printControlLine(dPad[0], "" + theme.coral("(A)"), 3);
-        printControlLine(dPad[1], theme.berry("(B)"), 3);
-        printControlLine(dPad[2], "", 0);
+        printControlLine(D_PAD[0], "" + coral("(A)"), 3);
+        printControlLine(D_PAD[1], berry("(B)"), 3);
+        printControlLine(D_PAD[2], "", 0);
     }
 
     private void printControlLine(String dPad, String button, int buttonLength) {
-        String content = "        " + theme.gray(dPad) + repeat(' ', 27) + button;
+        String content = "        " + gray(dPad) + repeat(' ', 27) + button;
         printBodyLine(content, 8 + dPad.length() + 27 + buttonLength);
     }
 
     private void printSelectAndStart() {
-        String controls = theme.warmRose("[ SELECT ]  [ START ]");
+        String controls = warmRose("[ SELECT ]  [ START ]");
         printCenteredBodyLine(controls, 21);
     }
 
     private void printSpeaker() {
-        for (String line : AsciiArt.speaker()) {
-            String content = repeat(' ', 49) + theme.gray(line);
+        for (String line : SPEAKER) {
+            String content = repeat(' ', 49) + gray(line);
             printBodyLine(content, 49 + line.length());
         }
     }
 
     private void printCompactSpeaker() {
-        String line = AsciiArt.speaker()[0];
-        String content = repeat(' ', 49) + theme.gray(line);
+        String line = SPEAKER[0];
+        String content = repeat(' ', 49) + gray(line);
         printBodyLine(content, 49 + line.length());
     }
 
@@ -332,8 +378,8 @@ public final class TerminalUI {
 
     private void printBodyLine(String styledText, int visibleLength) {
         int rightPadding = Math.max(0, BODY_WIDTH - visibleLength);
-        System.out.println(theme.cherry("|") + styledText
-                + repeat(' ', rightPadding) + theme.cherry("|"));
+        System.out.println(cherry("|") + styledText
+                + repeat(' ', rightPadding) + cherry("|"));
     }
 
     private String repeat(char character, int count) {
@@ -360,5 +406,61 @@ public final class TerminalUI {
         }
         result.append(text);
         return result.toString();
+    }
+
+    // Color helpers return plain text whenever colors are disabled.
+    private String coral(String text) {
+        return style(text, CORAL_RED);
+    }
+
+    private String berry(String text) {
+        return style(text, BERRY_RED);
+    }
+
+    private String cherry(String text) {
+        return style(text, CHERRY_WINE);
+    }
+
+    private String cream(String text) {
+        return style(text, CREAM_PEACH);
+    }
+
+    private String dustyRose(String text) {
+        return style(text, DUSTY_ROSE);
+    }
+
+    private String warmRose(String text) {
+        return style(text, WARM_ROSE);
+    }
+
+    private String white(String text) {
+        return style(text, SOFT_WHITE);
+    }
+
+    private String gray(String text) {
+        return style(text, WARM_GRAY);
+    }
+
+    private String boldCream(String text) {
+        return style(text, BOLD + CREAM_PEACH);
+    }
+
+    private String boldWhite(String text) {
+        return style(text, BOLD + SOFT_WHITE);
+    }
+
+    private String reset() {
+        return colorsEnabled ? RESET : "";
+    }
+
+    private String style(String text, String codes) {
+        if (!colorsEnabled) {
+            return text;
+        }
+        return codes + text + RESET;
+    }
+
+    private static String foreground(int red, int green, int blue) {
+        return ESCAPE + "38;2;" + red + ";" + green + ";" + blue + "m";
     }
 }
