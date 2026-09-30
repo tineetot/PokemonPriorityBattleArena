@@ -4,7 +4,7 @@
 
 This is a small, curated dataset derived from PokéAPI for Pokémon Priority Battle Arena. It contains eight Pokémon and 24 unique moves. The limited scope keeps the data understandable and appropriate for a three-week academic Data Structures and Algorithms project.
 
-The files are stored locally so the finished game will not require an internet connection.
+The files are stored locally, so the game does not require an internet connection.
 
 ## 2. Files Included
 
@@ -63,13 +63,13 @@ PokéAPI data was accessed on September 28, 2026.
 - Discharge has a fixed base power, so its PokéAPI `power` value is stored directly without a sentinel or gameplay adjustment.
 - No statistics were increased, decreased, or rebalanced.
 
-## 8. How the Dataset Will Be Used
+## 8. How the Dataset Is Used
 
-A later Java loader will create `Pokemon` and `Move` objects from these local CSV files. The loader is intentionally not part of this milestone.
+`PokemonDataLoader` reads both local CSV files, validates their records and move references, and creates the `Pokemon` and `Move` objects used by the game. Each Pokémon receives its own independent `Move` instances so that PP changes during one Pokémon's battle do not affect another Pokémon.
 
-Move priority and Pokémon Speed will later be used by the custom max-heap to rank battle actions. A sequence number will be generated during gameplay as the deterministic final tie-breaker; it is not stored in this dataset.
+During each turn, the selected moves are represented by `BattleAction` objects. The custom max-heap ranks those actions by move priority, then actor Pokémon Speed, then a generated sequence number as the deterministic final tie-breaker. The sequence number is runtime state and is not stored in the dataset.
 
-Current PP is runtime state and is also not stored. Each loaded move will begin with `currentPp = maxPp`, matching the existing `Move` constructor.
+Current PP is also runtime state and is not stored. Each loaded move begins with `currentPp = maxPp`, and valid attempted moves consume PP during the integrated battle.
 
 ## 9. Limitations
 
