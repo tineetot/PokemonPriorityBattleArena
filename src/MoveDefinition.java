@@ -1,9 +1,5 @@
-/**
- * Immutable template for one row in moves.csv.
- *
- * A definition stores no current PP. Calling createMove() produces a new,
- * independent Move object with full PP.
- */
+// Stores a move template loaded from the CSV and creates separate Move objects so Pokémon do not share current PP.
+
 public final class MoveDefinition {
     private final String id;
     private final String name;

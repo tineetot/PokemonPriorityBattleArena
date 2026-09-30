@@ -1,3 +1,5 @@
+// Stores the Game Boy-inspired title and decorative ASCII artwork.
+
 public final class AsciiArt {
     private static final String[] POKEMON_LOGO = {
         " ____   ___  _  __ _____ __  __  ___  _   _ ",

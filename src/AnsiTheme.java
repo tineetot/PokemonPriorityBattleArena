@@ -1,3 +1,5 @@
+// Contains the ANSI colors, text styles, and no-color support used by the terminal interface.
+
 public final class AnsiTheme {
     private static final String ESCAPE = "\u001B[";
 

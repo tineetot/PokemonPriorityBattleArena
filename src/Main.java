@@ -1,3 +1,6 @@
+// Starts the program, manages the main-menu loop, loads the dataset,
+// and opens team selection.
+
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -6,11 +9,10 @@ public class Main {
         boolean colorsEnabled = !hasArgument(args, "--no-color")
                 && System.getenv("NO_COLOR") == null;
 
-        // Initialize the terminal UI and heap demo with the specified color settings.
+        // Initialize the terminal UI with the specified color settings.
         AnsiTheme theme = new AnsiTheme(colorsEnabled);
         TerminalUI terminalUI = new TerminalUI(theme);
         Scanner scanner = new Scanner(System.in);
-        HeapDemo heapDemo = new HeapDemo(terminalUI);
         PokemonDataLoader dataLoader = new PokemonDataLoader();
         boolean running = true;
 
@@ -21,14 +23,9 @@ public class Main {
             int selection = terminalUI.readMenuSelection(scanner);
             if (selection == 1) {
                 startTeamSelection(dataLoader, terminalUI, scanner);
-            } else if (selection == 3) {
-                heapDemo.run(scanner);
-            } else if (selection == 5) {
-                terminalUI.showSelectionMessage(selection);
-                running = false;
             } else {
-                terminalUI.showSelectionMessage(selection);
-                terminalUI.waitForEnter(scanner);
+                terminalUI.showFarewellMessage();
+                running = false;
             }
         }
     }
