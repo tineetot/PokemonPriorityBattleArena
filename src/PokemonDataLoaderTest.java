@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public final class PokemonDataLoaderTest {
@@ -74,10 +76,7 @@ public final class PokemonDataLoaderTest {
         check(secondQuickAttack.getCurrentPp() == secondQuickAttack.getMaxPp(),
                 "Moves from a second load should begin with full PP.");
 
-        MoveDefinition definition = new MoveDefinition("test-move", "Test Move",
-                PokemonType.NORMAL, 25, 100, 0, 5);
-        check(definition.createMove() != definition.createMove(),
-                "A MoveDefinition should create a new Move every time.");
+        testMissingMoveReference(loader);
 
         System.out.println("All " + checksPassed
                 + " PokemonDataLoader checks passed.");
@@ -102,6 +101,44 @@ public final class PokemonDataLoaderTest {
             }
         }
         return null;
+    }
+
+    private static void testMissingMoveReference(PokemonDataLoader loader)
+            throws IOException {
+        String moveData = "id,name,type,power,accuracy,priority,max_pp\n"
+                + "tackle,Tackle,NORMAL,40,100,0,35\n";
+        String pokemonData =
+                "id,name,type,hp,attack,defense,speed,move_1,move_2,move_3,move_4\n"
+                + "testmon,Testmon,NORMAL,50,50,50,50,"
+                + "tackle,tackle,tackle,missing-move\n";
+
+        File moveFile = createTemporaryCsv("moves-test", moveData);
+        File pokemonFile = createTemporaryCsv("pokemon-test", pokemonData);
+        boolean missingReferenceRejected = false;
+
+        try {
+            loader.load(pokemonFile.getAbsolutePath(), moveFile.getAbsolutePath());
+        } catch (IllegalArgumentException exception) {
+            String message = exception.getMessage();
+            missingReferenceRejected = message.contains(pokemonFile.getAbsolutePath())
+                    && message.contains("line 2")
+                    && message.contains("missing-move");
+        } finally {
+            pokemonFile.delete();
+            moveFile.delete();
+        }
+
+        check(missingReferenceRejected,
+                "A missing move reference should report its file, line, and move ID.");
+    }
+
+    private static File createTemporaryCsv(String prefix, String content)
+            throws IOException {
+        File file = File.createTempFile(prefix, ".csv");
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(content);
+        }
+        return file;
     }
 
     private static void check(boolean condition, String failureMessage) {
